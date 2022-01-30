@@ -59,6 +59,10 @@ export class Tetromino {
     }
 
     toString() {
-        return this.orientations[this.orientationIndex].toString()
+        return this.getShape().toString()
+    }
+
+    getShape() {
+        return this.orientations[this.orientationIndex]
     }
 }

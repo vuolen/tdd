@@ -1,4 +1,5 @@
 import { Block } from "./Block.mjs";
+import { Tetromino } from "./Tetromino.mjs";
 
 export class Board {
   width;
@@ -27,12 +28,28 @@ export class Board {
     return str
   }
 
-  drop(block) {
+  drop(piece) {
     if (this.fallingPiece) {
       throw new Error("already falling")
     }
-    this.columns[Math.floor(this.width / 2)][0] = block
-    this.fallingPiece = block
+    if (piece instanceof Block) {
+      this.columns[Math.floor(this.width / 2)][0] = piece
+      this.fallingPiece = [piece]
+    } else if (piece instanceof Tetromino) {
+      const shape = piece.getShape()
+      const blocks = shape.shape.map(char => char === "." ? Block.EMPTY : new Block(char))
+      const leftMargin = Math.floor(this.width / 2 - shape.size / 2)
+      this.fallingPiece = []
+      for (let i = 0; i < shape.size; i++) {
+        for (let j = 0; j < shape.size; j++) {
+          const block = blocks[i + j * shape.size]
+          if (block !== Block.EMPTY) {
+            this.columns[leftMargin + i][j] = block
+            this.fallingPiece.push(block)
+          }
+        }
+      }
+    }
   }
 
   tick() {
@@ -44,7 +61,7 @@ export class Board {
       if (column[i] === Block.EMPTY) {
         column[i] = column[i - 1]
         column[i - 1] = Block.EMPTY
-      } else if (column[i] === this.fallingPiece) {
+      } else if (this.fallingPiece.includes(column[i])) {
         this.fallingPiece = undefined
       }
     }

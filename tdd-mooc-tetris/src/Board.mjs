@@ -1,3 +1,5 @@
+import { Block } from "./Block.mjs";
+
 export class Board {
   width;
   height;
@@ -8,13 +10,13 @@ export class Board {
     this.width = width;
     this.height = height;
     this.pieceFalling = false;
-    this.column = Array(height).fill(".")
+    this.column = Array(height).fill(Block.EMPTY)
   }
 
   toString() {
     let str = ""
     for (let i = 0; i < this.height; i++) {
-      str += `.${this.column[i]}.\n`
+      str += `.${this.column[i].color}.\n`
     }
     return str
   }
@@ -23,15 +25,15 @@ export class Board {
     if (this.fallingPiece) {
       throw new Error("already falling")
     }
-    this.column[0] = block.color
-    this.fallingPiece = block.color
+    this.column[0] = block
+    this.fallingPiece = block
   }
 
   tick() {
     for (let i = this.height - 1; i > 0; i--) {
-      if (this.column[i] === ".") {
+      if (this.column[i] === Block.EMPTY) {
         this.column[i] = this.column[i - 1]
-        this.column[i - 1] = "."
+        this.column[i - 1] = Block.EMPTY
       } else if (this.column[i] === this.fallingPiece) {
         this.fallingPiece = undefined
       }

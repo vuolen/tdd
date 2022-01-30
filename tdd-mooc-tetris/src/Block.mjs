@@ -1,4 +1,6 @@
 export class Block {
+  static EMPTY = new Block(".")
+
   color;
 
   constructor(color) {

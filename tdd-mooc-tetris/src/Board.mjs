@@ -57,6 +57,9 @@ export class Board {
   }
 
   tickColumn(column) {
+    if (this.fallingPiece === undefined) {
+      return;
+    }
     for (let i = this.height - 1; i > 0; i--) {
       if (column[i] === Block.EMPTY) {
         column[i] = column[i - 1]

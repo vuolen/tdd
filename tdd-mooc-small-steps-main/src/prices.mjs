@@ -78,6 +78,7 @@ function createApp(database) {
       oldDate.year = newDate.year
       oldDate.month = newDate.month
       oldDate.day = newDate.day
+      oldDate.dayOfWeek = newDate.dayOfWeek
       return oldDate;
     }
   }

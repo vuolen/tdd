@@ -73,6 +73,7 @@ function createApp(database) {
 
   function parseDate(dateString) {
     if (dateString) {
+      const oldDate = new Date(dateString)
       const newDate = Temporal.PlainDate.from(dateString)
       return new Date(dateString);
     }

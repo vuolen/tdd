@@ -77,6 +77,7 @@ function createApp(database) {
       const newDate = Temporal.PlainDate.from(dateString)
       oldDate.year = newDate.year
       oldDate.month = newDate.month
+      oldDate.day = newDate.day
       return oldDate;
     }
   }

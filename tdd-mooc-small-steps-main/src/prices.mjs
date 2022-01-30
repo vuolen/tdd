@@ -75,7 +75,7 @@ function createApp(database) {
     if (dateString) {
       const oldDate = new Date(dateString)
       const newDate = Temporal.PlainDate.from(dateString)
-      return new Date(dateString);
+      return oldDate;
     }
   }
 

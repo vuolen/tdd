@@ -53,7 +53,25 @@ export class Board {
   }
 
   tick() {
-    this.columns.forEach(column => this.tickColumn(column))
+    if (this.columns.every(column => this.canMove(column))) {
+      this.columns.forEach(column => this.tickColumn(column))
+    }
+  }
+
+  canMove(column) {
+    for (let i = this.height; i < this.height; i++) {
+      if (this.fallingPiece.includes(column[i])) {
+        if (i + 1 !== this.height) {
+          return false;
+        }
+        const nextBlock = column[i + 1];
+        if (nextBlock === Block.EMPTY || this.fallingPiece.includes(nextBlock)) {
+          continue;
+        }
+        return false;
+      }
+    }
+    return true;
   }
 
   tickColumn(column) {

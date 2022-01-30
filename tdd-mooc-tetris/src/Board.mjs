@@ -53,37 +53,35 @@ export class Board {
   }
 
   tick() {
-    if (this.columns.every(column => this.canMove(column))) {
+    if (this.fallingPiece !== undefined && this.columns.every(column => this.canMove(column))) {
       this.columns.forEach(column => this.tickColumn(column))
+    } else {
+      this.fallingPiece = undefined;
     }
   }
 
   canMove(column) {
-    for (let i = this.height; i < this.height; i++) {
+    for (let i = this.height - 1; i >= 0; i--) {
       if (this.fallingPiece.includes(column[i])) {
-        if (i + 1 !== this.height) {
+        if (i + 1 === this.height) {
           return false;
         }
         const nextBlock = column[i + 1];
         if (nextBlock === Block.EMPTY || this.fallingPiece.includes(nextBlock)) {
           continue;
+        } else {
+          return false;
         }
-        return false;
       }
     }
     return true;
   }
 
   tickColumn(column) {
-    if (this.fallingPiece === undefined) {
-      return;
-    }
     for (let i = this.height - 1; i > 0; i--) {
-      if (column[i] === Block.EMPTY) {
+      if (this.fallingPiece.includes(column[i - 1])) {
         column[i] = column[i - 1]
         column[i - 1] = Block.EMPTY
-      } else if (this.fallingPiece.includes(column[i])) {
-        this.fallingPiece = undefined
       }
     }
   }

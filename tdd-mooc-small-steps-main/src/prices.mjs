@@ -61,6 +61,7 @@ function createApp(database) {
       let holiday = new Date(row.holiday);
       const newDate = Temporal.PlainDate.from(row.holiday)
       holiday.year = newDate.year
+      holiday.month = newDate.month
       if (
         date &&
         date.year === holiday.year &&

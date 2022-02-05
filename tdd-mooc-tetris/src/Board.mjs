@@ -53,14 +53,14 @@ export class Board {
   }
 
   tick() {
-    if (this.fallingPiece !== undefined && this.columns.every(column => this.canMove(column))) {
+    if (this.fallingPiece !== undefined && this.columns.every(column => this.canFall(column))) {
       this.columns.forEach(column => this.tickColumn(column))
     } else {
       this.fallingPiece = undefined;
     }
   }
 
-  canMove(column) {
+  canFall(column) {
     for (let i = this.height - 1; i >= 0; i--) {
       if (this.fallingPiece.includes(column[i])) {
         if (i + 1 === this.height) {
@@ -88,5 +88,28 @@ export class Board {
 
   hasFalling() {
     return this.fallingPiece ? true : false
+  }
+
+  moveHorizontal(dx) {
+    const columnIndices = [...Array(this.width).keys()];
+    if (dx > 0) {
+      columnIndices.reverse()
+    }
+    for (const col of columnIndices) {
+      for (let row = 0; row < this.height; row++) {
+        if (this.fallingPiece.includes(this.columns[col][row])) {
+          this.columns[col + dx][row] = this.columns[col][row]
+          this.columns[col][row] = Block.EMPTY
+        }
+      }
+    }
+  }
+
+  moveLeft() {
+    this.moveHorizontal(-1)
+  }
+
+  moveRight() {
+    this.moveHorizontal(1)
   }
 }

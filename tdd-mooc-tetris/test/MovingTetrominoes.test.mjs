@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { Block } from "../src/Block.mjs";
 import { Board } from "../src/Board.mjs";
 import { Tetromino } from "../src/Tetromino.mjs";
 
@@ -66,5 +67,42 @@ describe("Moving tetrominoes", () => {
              .......`
         );
     })
+
+   it("cannot be moved down past board", () => {
+        board.drop(Tetromino.T_SHAPE);
+        board.moveDown();
+        board.moveDown();
+        board.moveDown();
+        expect(board.toString()).to.equalShape(
+            `.......
+             .......
+             ...T...
+             ..TTT..`
+        );
+        expect(board.hasFalling()).to.be.false
+    })
+
+    it("cannot be moved left through blocks", () => {
+        for (let i = 0; i < 4; i++) {
+            board.drop(new Block("Y"))
+            board.moveLeft()
+            board.moveLeft()
+            board.moveLeft()
+            board.moveDown()
+            board.moveDown()
+            board.moveDown()
+            board.moveDown()
+            board.moveDown()
+        }
+        board.drop(Tetromino.T_SHAPE);
+        board.moveLeft();
+        board.moveLeft();
+        expect(board.toString()).to.equalShape(
+             `Y.T....
+              YTTT...
+              Y......
+              Y......`
+        );
+    })
     
-})
+}) 

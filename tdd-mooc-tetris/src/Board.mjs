@@ -53,24 +53,35 @@ export class Board {
   }
 
   tick() {
-    if (this.fallingPiece !== undefined && this.columns.every(column => this.canFall(column))) {
+    if (this.canMove(0, 1)) {
       this.columns.forEach(column => this.tickColumn(column))
     } else {
       this.fallingPiece = undefined;
     }
   }
 
-  canFall(column) {
-    for (let i = this.height - 1; i >= 0; i--) {
-      if (this.fallingPiece.includes(column[i])) {
-        if (i + 1 === this.height) {
-          return false;
-        }
-        const nextBlock = column[i + 1];
-        if (nextBlock === Block.EMPTY || this.fallingPiece.includes(nextBlock)) {
-          continue;
-        } else {
-          return false;
+  outOfBounds(col, row) {
+    return  col < 0 || row < 0 ||
+            col >= this.width || row >= this.height
+  }
+
+  canMove(dx, dy) {
+    if (this.fallingPiece === undefined) {
+      return false;
+    }
+    for (let col = 0; col < this.width; col++) {
+      for (let row = 0; row < this.width; row++) {
+        if (this.fallingPiece.includes(this.columns[col][row])) {
+          if (this.outOfBounds(col + dx, row + dy)) {
+            return false
+          }
+
+          const nextBlock = this.columns[col + dx][row + dy]
+          if (nextBlock === Block.EMPTY || this.fallingPiece.includes(nextBlock)) {
+            continue;
+          } else {
+            return false;
+          }
         }
       }
     }
@@ -106,13 +117,9 @@ export class Board {
   }
 
   moveLeft() {
-    for (let row = 0; row < this.width; row++) {
-      if (this.fallingPiece.includes(this.columns[0][row])) {
-        return;
-      }
+    if (this.canMove(-1, 0)) {
+      this.moveHorizontal(-1)
     }
-      
-    this.moveHorizontal(-1)
   }
 
   moveRight() {
@@ -126,6 +133,6 @@ export class Board {
   }
 
   moveDown() {
-    this.columns.forEach(column => this.tickColumn(column))
+    this.tick()
   }
 }

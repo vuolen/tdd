@@ -106,10 +106,26 @@ export class Board {
   }
 
   moveLeft() {
+    for (let row = 0; row < this.width; row++) {
+      if (this.fallingPiece.includes(this.columns[0][row])) {
+        return;
+      }
+    }
+      
     this.moveHorizontal(-1)
   }
 
   moveRight() {
+    for (let row = 0; row < this.width; row++) {
+      if (this.fallingPiece.includes(this.columns[this.width - 1][row])) {
+        return;
+      }
+    }
+
     this.moveHorizontal(1)
+  }
+
+  moveDown() {
+    this.columns.forEach(column => this.tickColumn(column))
   }
 }

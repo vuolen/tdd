@@ -85,14 +85,12 @@ describe("Moving tetrominoes", () => {
     it("cannot be moved left through blocks", () => {
         for (let i = 0; i < 4; i++) {
             board.drop(new Block("Y"))
-            board.moveLeft()
-            board.moveLeft()
-            board.moveLeft()
-            board.moveDown()
-            board.moveDown()
-            board.moveDown()
-            board.moveDown()
-            board.moveDown()
+            for (let i = 0; i < 3; i++) {
+                board.moveLeft()
+            }
+            for (let i = 0; i < 4; i++) {
+                board.moveDown()
+            }
         }
         board.drop(Tetromino.T_SHAPE);
         board.moveLeft();
@@ -105,4 +103,41 @@ describe("Moving tetrominoes", () => {
         );
     })
     
+    it("cannot be moved right through blocks", () => {
+        for (let i = 0; i < 4; i++) {
+            board.drop(new Block("Y"))
+            for (let i = 0; i < 3; i++) {
+                board.moveRight()
+            }
+            for (let i = 0; i < 4; i++) {
+                board.moveDown()
+            }
+        }
+        board.drop(Tetromino.T_SHAPE);
+        board.moveRight();
+        board.moveRight();
+        expect(board.toString()).to.equalShape(
+             `....T.Y
+              ...TTTY
+              ......Y
+              ......Y`
+        );
+    })
+
+    it("cannot be moved down through blocks", () => {
+        board.drop(new Block("Y"))
+        for (let i = 0; i < 4; i++) {
+            board.moveDown()
+        }
+        board.drop(Tetromino.T_SHAPE);
+        board.moveDown()
+        board.moveDown()
+        board.moveDown()
+        expect(board.toString()).to.equalShape(
+             `.......
+              ...T...
+              ..TTT..
+              ...Y...`
+        );
+    })
 }) 

@@ -6,15 +6,14 @@ export class Board {
   height;
   columns;
   fallingPiece;
-  fallingTetromino;
-  fallingTetrominoPosition;
 
   constructor(width, height) {
     this.width = width;
     this.height = height;
+    this.pieceFalling = false;
     this.columns = []
     for (let i = 0; i < this.width; i++) {
-      this.columns.push(Array(height).fill(".").map(char => new Block(char)))
+      this.columns.push(Array(height).fill(Block.EMPTY))
     }
   }
 
@@ -36,24 +35,17 @@ export class Board {
     if (piece instanceof Block) {
       this.columns[Math.floor(this.width / 2)][0] = piece
       this.fallingPiece = [piece]
-      this.fallingTetromino = new Tetromino(
-      `...
-       .${piece.color}.
-       ...`, 1)
-      this.fallingTetrominoPosition = [this.width / 2 - 1, 0]
     } else if (piece instanceof Tetromino) {
-      this.fallingTetromino = piece
-      this.fallingTetrominoPosition = [this.width / 2 - piece.size / 2, 0]
       const shape = piece.getShape()
+      const blocks = shape.shape.map(char => char === "." ? Block.EMPTY : new Block(char))
       const leftMargin = Math.floor(this.width / 2 - shape.size / 2)
       this.fallingPiece = []
       for (let i = 0; i < shape.size; i++) {
         for (let j = 0; j < shape.size; j++) {
-          const block = shape.blocks[i + j * shape.size]
-          if (!block.isEmpty()) {
-            const blockClone = new Block(block.color)
-            this.columns[leftMargin + i][j] = blockClone
-            this.fallingPiece.push(blockClone)
+          const block = blocks[i + j * shape.size]
+          if (block !== Block.EMPTY) {
+            this.columns[leftMargin + i][j] = block
+            this.fallingPiece.push(block)
           }
         }
       }
@@ -65,10 +57,6 @@ export class Board {
       this.columns.forEach(column => this.tickColumn(column))
     } else {
       this.fallingPiece = undefined;
-      this.fallingTetromino = undefined;
-    }
-    if (this.fallingTetrominoPosition) {
-      this.fallingTetrominoPosition[1]++;
     }
   }
 
@@ -89,7 +77,7 @@ export class Board {
           }
 
           const nextBlock = this.columns[col + dx][row + dy]
-          if (nextBlock.isEmpty() || this.fallingPiece.includes(nextBlock)) {
+          if (nextBlock === Block.EMPTY || this.fallingPiece.includes(nextBlock)) {
             continue;
           } else {
             return false;
@@ -100,22 +88,11 @@ export class Board {
     return true;
   }
 
-  validTranslation(dx, dy) {
-    const newX = this.fallingTetrominoPosition[0] + dx
-    const newY = this.fallingTetrominoPosition[1] + dy
-    const size = this.fallingTetromino.size
-    for (let x = 0; x < size; x++) {
-      for (let y = 0; y < size; y++) {
-        
-      }
-    }
-  }
-
   tickColumn(column) {
     for (let i = this.height - 1; i > 0; i--) {
       if (this.fallingPiece.includes(column[i - 1])) {
         column[i] = column[i - 1]
-        column[i - 1] = new Block(".")
+        column[i - 1] = Block.EMPTY
       }
     }
   }
@@ -133,11 +110,10 @@ export class Board {
       for (let row = 0; row < this.height; row++) {
         if (this.fallingPiece.includes(this.columns[col][row])) {
           this.columns[col + dx][row] = this.columns[col][row]
-          this.columns[col][row] = new Block(".")
+          this.columns[col][row] = Block.EMPTY
         }
       }
     }
-    this.fallingTetrominoPosition[0] += dx
   }
 
   moveLeft() {

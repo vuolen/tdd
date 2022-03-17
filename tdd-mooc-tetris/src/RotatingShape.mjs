@@ -1,19 +1,17 @@
-import { Block } from "./Block.mjs";
-
 export class RotatingShape {
 
-    blocks;
+    shape;
     size;
 
     constructor(str) {
-        this.blocks = str.replace(/\s/g, "").split("").map(char => new Block(char))
+        this.shape = str.replace(/\s/g, "").split("")
         this.size = str.split("\n")[0].length
     }
 
     toString() {
         let str = ""
         for (let i = 0; i < this.size * this.size; i += this.size) {
-            str += this.blocks.slice(i, i + this.size).map(block => block.color).join("") + "\n"
+            str += this.shape.slice(i, i + this.size).join("") + "\n"
         }
         return str
     }
@@ -27,7 +25,7 @@ export class RotatingShape {
             for (let dx = -half; dx <= half; dx++) {
                 const i = ((half + dy) * this.size) + (half + dx)
                 const j = ((half + dx) * this.size) + (half - dy)
-                newShape.blocks[j] = this.blocks[i]
+                newShape.shape[j] = this.shape[i]
             }
         }
 

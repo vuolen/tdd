@@ -6,6 +6,8 @@ export class Board {
   height;
   columns;
   fallingPiece;
+  fallingTetromino;
+  fallingTetrominoPosition;
 
   constructor(width, height) {
     this.width = width;
@@ -21,11 +23,25 @@ export class Board {
     let str = ""
     for (let row = 0; row < this.height; row++) {
       for (let col = 0; col < this.width; col++) {
-        str += this.columns[col][row].color
+        str += this.getBlock(col, row).color;
       }
       str += "\n"
     }
     return str
+  }
+
+  getBlock(x, y) {
+    if (this.fallingTetromino) {
+      let [ftX, ftY] = this.fallingTetrominoPosition;
+      let size = this.fallingTetromino.getSize()
+      if (x >= ftX && x < ftX + size && y >= ftY && y < ftY + size) {
+        let block = this.fallingTetromino.getBlock(x - ftX, y - ftY)
+        if (!block.isEmpty) {
+          return block;
+        }
+      }
+    }
+    return this.columns[x][y]
   }
 
   drop(piece) {
@@ -35,11 +51,16 @@ export class Board {
     if (piece instanceof Block) {
       this.columns[Math.floor(this.width / 2)][0] = piece
       this.fallingPiece = [piece]
+      this.fallingTetromino = new Tetromino(`
+      ...
+      .${piece.color}.
+      ...`)
     } else if (piece instanceof Tetromino) {
       const shape = piece.getShape()
       const blocks = shape.shape.map(char => new Block(char))
       const leftMargin = Math.floor(this.width / 2 - shape.size / 2)
       this.fallingPiece = []
+      this.fallingTetromino = piece;
       for (let i = 0; i < shape.size; i++) {
         for (let j = 0; j < shape.size; j++) {
           const block = blocks[i + j * shape.size]
@@ -50,11 +71,13 @@ export class Board {
         }
       }
     }
+    this.fallingTetrominoPosition = [Math.floor(this.width / 2) - Math.floor(this.fallingTetromino.getSize() / 2), 0]
   }
 
   tick() {
     if (this.canMove(0, 1)) {
       this.columns.forEach(column => this.tickColumn(column))
+      this.fallingTetrominoPosition[1] += 1;
     } else {
       this.fallingPiece = undefined;
     }
@@ -114,6 +137,7 @@ export class Board {
         }
       }
     }
+    this.fallingTetrominoPosition[0] += dx;
   }
 
   moveLeft() {

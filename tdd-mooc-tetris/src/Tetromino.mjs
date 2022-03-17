@@ -1,4 +1,5 @@
 import { RotatingShape } from "./RotatingShape.mjs"
+import { Block } from "./Block.mjs"
 
 export class Tetromino {
     static T_SHAPE = new Tetromino(
@@ -64,5 +65,13 @@ export class Tetromino {
 
     getShape() {
         return this.orientations[this.orientationIndex]
+    }
+
+    getSize() {
+        return this.getShape().size;
+    }
+
+    getBlock(x, y) {
+        return new Block(this.getShape().shape[x + y * this.getSize()])
     }
 }

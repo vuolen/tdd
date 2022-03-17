@@ -13,7 +13,7 @@ export class Board {
     this.pieceFalling = false;
     this.columns = []
     for (let i = 0; i < this.width; i++) {
-      this.columns.push(Array(height).fill(Block.EMPTY))
+      this.columns.push(Array(height).fill(new Block(".")))
     }
   }
 
@@ -37,13 +37,13 @@ export class Board {
       this.fallingPiece = [piece]
     } else if (piece instanceof Tetromino) {
       const shape = piece.getShape()
-      const blocks = shape.shape.map(char => char === "." ? Block.EMPTY : new Block(char))
+      const blocks = shape.shape.map(char => new Block(char))
       const leftMargin = Math.floor(this.width / 2 - shape.size / 2)
       this.fallingPiece = []
       for (let i = 0; i < shape.size; i++) {
         for (let j = 0; j < shape.size; j++) {
           const block = blocks[i + j * shape.size]
-          if (block !== Block.EMPTY) {
+          if (!block.isEmpty()) {
             this.columns[leftMargin + i][j] = block
             this.fallingPiece.push(block)
           }
@@ -77,7 +77,7 @@ export class Board {
           }
 
           const nextBlock = this.columns[col + dx][row + dy]
-          if (nextBlock === Block.EMPTY || this.fallingPiece.includes(nextBlock)) {
+          if (nextBlock.isEmpty() || this.fallingPiece.includes(nextBlock)) {
             continue;
           } else {
             return false;
@@ -92,7 +92,7 @@ export class Board {
     for (let i = this.height - 1; i > 0; i--) {
       if (this.fallingPiece.includes(column[i - 1])) {
         column[i] = column[i - 1]
-        column[i - 1] = Block.EMPTY
+        column[i - 1] = new Block(".") 
       }
     }
   }
@@ -110,7 +110,7 @@ export class Board {
       for (let row = 0; row < this.height; row++) {
         if (this.fallingPiece.includes(this.columns[col][row])) {
           this.columns[col + dx][row] = this.columns[col][row]
-          this.columns[col][row] = Block.EMPTY
+          this.columns[col][row] = new Block(".") 
         }
       }
     }

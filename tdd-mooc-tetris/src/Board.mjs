@@ -147,13 +147,9 @@ export class Board {
   }
 
   moveRight() {
-    for (let row = 0; row < this.width; row++) {
-      if (this.fallingPiece.includes(this.columns[this.width - 1][row])) {
-        return;
-      }
+    if (this.canMove(1, 0)) {
+      this.moveHorizontal(1)
     }
-
-    this.moveHorizontal(1)
   }
 
   moveDown() {

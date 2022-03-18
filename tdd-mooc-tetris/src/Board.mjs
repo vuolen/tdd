@@ -8,11 +8,13 @@ export class Board {
   fallingPiece;
   fallingTetromino;
   fallingTetrominoPosition;
+  pieces;
 
   constructor(width, height) {
     this.width = width;
     this.height = height;
     this.pieceFalling = false;
+    this.pieces = [];
     this.columns = []
     for (let i = 0; i < this.width; i++) {
       this.columns.push(Array(height).fill(new Block(".")))
@@ -31,17 +33,17 @@ export class Board {
   }
 
   getBlock(x, y) {
-    if (this.fallingTetromino) {
-      let [ftX, ftY] = this.fallingTetrominoPosition;
-      let size = this.fallingTetromino.getSize()
-      if (x >= ftX && x < ftX + size && y >= ftY && y < ftY + size) {
-        let block = this.fallingTetromino.getBlock(x - ftX, y - ftY)
-        if (!block.isEmpty) {
+    for (let i = 0; i < this.pieces.length; i++) {
+      let {x: tX, y: tY, tetromino} = this.pieces[i]
+      let size = tetromino.getSize()
+      if (x >= tX && x < tX + size && y >= tY && y < tY + size) {
+        let block = tetromino.getBlock(x - tX, y - tY)
+        if (!block.isEmpty()) {
           return block;
         }
       }
     }
-    return this.columns[x][y]
+    return new Block(".")
   }
 
   drop(piece) {
@@ -51,16 +53,17 @@ export class Board {
     if (piece instanceof Block) {
       this.columns[Math.floor(this.width / 2)][0] = piece
       this.fallingPiece = [piece]
-      this.fallingTetromino = new Tetromino(`
-      ...
-      .${piece.color}.
-      ...`)
+      this.fallingTetromino = {
+        tetromino: new Tetromino(`.${piece.color}.
+          ...
+          ...`, 1)
+      }
     } else if (piece instanceof Tetromino) {
       const shape = piece.getShape()
       const blocks = shape.shape.map(char => new Block(char))
       const leftMargin = Math.floor(this.width / 2 - shape.size / 2)
       this.fallingPiece = []
-      this.fallingTetromino = piece;
+      this.fallingTetromino = {tetromino: piece};
       for (let i = 0; i < shape.size; i++) {
         for (let j = 0; j < shape.size; j++) {
           const block = blocks[i + j * shape.size]
@@ -71,15 +74,21 @@ export class Board {
         }
       }
     }
-    this.fallingTetrominoPosition = [Math.floor(this.width / 2) - Math.floor(this.fallingTetromino.getSize() / 2), 0]
+    this.fallingTetromino.x = Math.floor(this.width / 2) - Math.floor(this.fallingTetromino.tetromino.getSize() / 2)
+    if (this.width % 2 == 0) {
+      this.fallingTetromino.x -= 1;
+    }
+    this.fallingTetromino.y = 0
+    this.pieces.push(this.fallingTetromino)
   }
 
   tick() {
     if (this.canMove(0, 1)) {
       this.columns.forEach(column => this.tickColumn(column))
-      this.fallingTetrominoPosition[1] += 1;
+      this.fallingTetromino.y += 1;
     } else {
       this.fallingPiece = undefined;
+      this.fallingTetromino = undefined;
     }
   }
 
@@ -137,7 +146,7 @@ export class Board {
         }
       }
     }
-    this.fallingTetrominoPosition[0] += dx;
+    this.fallingTetromino.x += dx;
   }
 
   moveLeft() {
